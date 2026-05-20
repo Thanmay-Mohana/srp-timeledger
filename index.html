@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
   <title>SRP Time Ledger</title>
+
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -25,7 +26,6 @@
       flex-direction: column;
     }
 
-    /* ── HEADER ── */
     .header {
       background: #1A1A2E;
       padding: 14px 18px;
@@ -33,6 +33,7 @@
       align-items: center;
       gap: 12px;
     }
+
     .header-logo {
       font-size: 22px;
       font-weight: 800;
@@ -40,25 +41,30 @@
       letter-spacing: 1px;
       flex-shrink: 0;
     }
+
     .header-divider {
       width: 2px;
       height: 36px;
       background: #E8521A;
       flex-shrink: 0;
     }
+
     .header-text { flex: 1; }
+
     .header-company {
       font-size: 12px;
       font-weight: 700;
       color: #FFFFFF;
       letter-spacing: 0.5px;
     }
+
     .header-tagline {
       font-size: 9px;
       color: #E8521A;
       letter-spacing: 0.4px;
       margin-top: 1px;
     }
+
     .header-icon {
       width: 40px;
       height: 40px;
@@ -71,7 +77,6 @@
       flex-shrink: 0;
     }
 
-    /* ── SECTION TITLE ── */
     .section-title {
       text-align: center;
       padding: 16px 20px 8px;
@@ -82,7 +87,6 @@
       border-bottom: 1px solid #EEEEEE;
     }
 
-    /* ── CONTENT ── */
     .content {
       padding: 16px;
       flex: 1;
@@ -91,7 +95,6 @@
       gap: 12px;
     }
 
-    /* ── CARDS ── */
     .card {
       background: #FFFFFF;
       border: 1px solid #E8E8E8;
@@ -102,22 +105,26 @@
       gap: 14px;
       box-shadow: 0 1px 4px rgba(0,0,0,0.05);
     }
+
     .card-icon {
       font-size: 22px;
       flex-shrink: 0;
       width: 36px;
       text-align: center;
     }
+
     .card-label {
       font-size: 11px;
       color: #888888;
       margin-bottom: 2px;
     }
+
     .card-value {
       font-size: 15px;
       font-weight: 700;
       color: #1A1A2E;
     }
+
     .status-badge {
       display: inline-flex;
       align-items: center;
@@ -126,17 +133,18 @@
       font-weight: 700;
       color: #1A1A2E;
     }
+
     .status-dot {
       width: 10px;
       height: 10px;
       border-radius: 50%;
       flex-shrink: 0;
     }
-    .dot-green { background: #27AE60; }
-    .dot-red   { background: #E74C3C; }
-    .dot-grey  { background: #AAAAAA; }
 
-    /* ── LOCATION WARNING ── */
+    .dot-green { background: #27AE60; }
+    .dot-red { background: #E74C3C; }
+    .dot-grey { background: #AAAAAA; }
+
     .location-warning {
       background: #FFF3CD;
       border: 1px solid #F0A500;
@@ -146,14 +154,15 @@
       align-items: center;
       gap: 12px;
     }
+
     .location-warning.show { display: flex; }
+
     .location-warning span {
       font-size: 12px;
       color: #7A5500;
       line-height: 1.5;
     }
 
-    /* ── BUTTONS ── */
     .btn {
       width: 100%;
       border: none;
@@ -168,14 +177,18 @@
       position: relative;
       transition: opacity 0.2s, transform 0.1s;
     }
+
     .btn:active { transform: scale(0.98); }
+
     .btn:disabled {
       opacity: 0.4;
       cursor: not-allowed;
       transform: none;
     }
+
     .btn-icon { font-size: 22px; flex-shrink: 0; }
     .btn-label { flex: 1; text-align: center; }
+
     .btn-arrow {
       font-size: 22px;
       flex-shrink: 0;
@@ -186,11 +199,13 @@
       background: #E8521A;
       color: #FFFFFF;
     }
+
     .btn-clockout {
       background: #FFFFFF;
       color: #E8521A;
       border: 2px solid #E8521A;
     }
+
     .btn-signin {
       background: #E8521A;
       color: #FFFFFF;
@@ -199,7 +214,6 @@
       font-size: 15px;
     }
 
-    /* ── PRIVACY CARD ── */
     .privacy-card {
       background: #FFF5F1;
       border: 1px solid #F5C5AF;
@@ -210,14 +224,15 @@
       gap: 12px;
       margin-top: auto;
     }
+
     .privacy-card .card-icon { font-size: 20px; margin-top: 2px; }
+
     .privacy-card p {
       font-size: 10.5px;
       color: #666666;
       line-height: 1.6;
     }
 
-    /* ── LOGIN SCREEN ── */
     .login-screen {
       flex: 1;
       display: flex;
@@ -228,23 +243,28 @@
       text-align: center;
       gap: 20px;
     }
+
     .login-logo {
       font-size: 48px;
       font-weight: 900;
       color: #1A1A2E;
       letter-spacing: 3px;
     }
+
     .login-logo span { color: #E8521A; }
+
     .login-title {
       font-size: 18px;
       font-weight: 700;
       color: #1A1A2E;
     }
+
     .login-sub {
       font-size: 13px;
       color: #888888;
       line-height: 1.6;
     }
+
     .login-divider {
       width: 60px;
       height: 3px;
@@ -252,7 +272,6 @@
       border-radius: 2px;
     }
 
-    /* ── TOAST ── */
     .toast {
       position: fixed;
       bottom: 30px;
@@ -270,25 +289,26 @@
       max-width: 90vw;
       text-align: center;
     }
+
     .toast.show { transform: translateX(-50%) translateY(0); }
     .toast.success { background: #27AE60; }
-    .toast.error   { background: #E74C3C; }
+    .toast.error { background: #E74C3C; }
     .toast.warning { background: #F0A500; }
 
-    /* ── LOADING ── */
     .loading-overlay {
       position: fixed;
       inset: 0;
       background: rgba(255,255,255,0.85);
-      display: flex;
+      display: none;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       z-index: 998;
       gap: 16px;
-      display: none;
     }
+
     .loading-overlay.show { display: flex; }
+
     .spinner {
       width: 40px;
       height: 40px;
@@ -297,14 +317,15 @@
       border-radius: 50%;
       animation: spin 0.8s linear infinite;
     }
+
     @keyframes spin { to { transform: rotate(360deg); } }
+
     .loading-overlay p {
       font-size: 13px;
       color: #555;
       font-weight: 600;
     }
 
-    /* ── SIGN OUT ── */
     .signout-btn {
       background: none;
       border: none;
@@ -325,11 +346,11 @@
     }
   </style>
 </head>
+
 <body>
 
 <div class="app" id="app">
 
-  <!-- HEADER -->
   <div class="header">
     <div class="header-logo">SRP</div>
     <div class="header-divider"></div>
@@ -340,33 +361,29 @@
     <div class="header-icon">🕐</div>
   </div>
 
-  <!-- LOGIN SCREEN -->
   <div class="login-screen" id="loginScreen">
     <div class="login-logo">SR<span>P</span></div>
     <div class="login-divider"></div>
     <div class="login-title">Time Ledger</div>
     <div class="login-sub">Clock In / Clock Out tracking for<br>SRP Global Consultancy employees</div>
+
     <button class="btn btn-signin" onclick="signIn()">
-      <svg width="20" height="20" viewBox="0 0 48 48" style="flex-shrink:0">
-        <path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.3 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.1 8 2.9l5.7-5.7C34.5 6.5 29.5 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.6-.4-3.9z"/>
-        <path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.6 16 19 13 24 13c3.1 0 5.8 1.1 8 2.9l5.7-5.7C34.5 6.5 29.5 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/>
-        <path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.3 35.3 26.8 36 24 36c-5.2 0-9.6-3.3-11.3-8H6.1C9.5 35.7 16.2 44 24 44z"/>
-        <path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.3-2.3 4.2-4.3 5.6l6.2 5.2C37 39 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/>
-      </svg>
-      Sign in with Google
+      <span>🔐</span>
+      <span>Sign in with Google</span>
     </button>
-    <p style="font-size:11px;color:#AAAAAA;margin-top:8px;">Use your Gmail or company email to sign in</p>
+
+    <p style="font-size:11px;color:#AAAAAA;margin-top:8px;">
+      Use your Gmail or company email to sign in
+    </p>
   </div>
 
-  <!-- MAIN APP SCREEN (hidden until signed in) -->
   <div id="mainScreen" style="display:none; flex-direction:column; flex:1;">
     <div class="section-title">TIME LEDGER — CLOCK IN / CLOCK OUT</div>
+
     <div class="content">
 
-      <!-- Sign out -->
-      <button class="signout-btn" onclick="signOut()">Sign Out ↗</button>
+      <button class="signout-btn" onclick="safeCloseMessage()">Close App ↗</button>
 
-      <!-- Welcome Card -->
       <div class="card">
         <div class="card-icon">👤</div>
         <div>
@@ -375,7 +392,6 @@
         </div>
       </div>
 
-      <!-- Date Card -->
       <div class="card">
         <div class="card-icon">📅</div>
         <div>
@@ -384,7 +400,6 @@
         </div>
       </div>
 
-      <!-- Status Card -->
       <div class="card">
         <div class="card-icon">📍</div>
         <div>
@@ -397,30 +412,28 @@
         </div>
       </div>
 
-      <!-- Location Warning -->
       <div class="location-warning" id="locationWarning">
         <span>⚠️</span>
-        <span>Location access is required. Please enable location permissions in your browser or phone settings to use this app.</span>
+        <span>Location access is required. Please enable location permissions in your browser or phone settings.</span>
       </div>
 
-      <!-- Clock In Button -->
       <button class="btn btn-clockin" id="btnClockIn" onclick="clockIn()" disabled>
         <span class="btn-icon">🕐</span>
         <span class="btn-label">Clock In</span>
         <span class="btn-arrow">›</span>
       </button>
 
-      <!-- Clock Out Button -->
       <button class="btn btn-clockout" id="btnClockOut" onclick="clockOut()" disabled>
         <span class="btn-icon">🕔</span>
         <span class="btn-label">Clock Out</span>
         <span class="btn-arrow">›</span>
       </button>
 
-      <!-- Privacy Card -->
       <div class="privacy-card">
         <div class="card-icon">🛡️</div>
-        <p>By using this app, your clock-in and clock-out time, user account, and location details will be recorded for attendance and operational tracking purposes.</p>
+        <p>
+          By using this app, your clock-in and clock-out time, user account, and location details will be recorded for attendance and operational tracking purposes.
+        </p>
       </div>
 
     </div>
@@ -428,30 +441,24 @@
 
 </div>
 
-<!-- Toast -->
 <div class="toast" id="toast"></div>
 
-<!-- Loading -->
 <div class="loading-overlay" id="loadingOverlay">
   <div class="spinner"></div>
   <p id="loadingText">Please wait...</p>
 </div>
 
-<!-- Google Sign In SDK -->
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
 <script>
-  // ── CONFIG ──
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwTGBBm7YgkUGg0vUiSAbvjNAQWwu0Ti_DBdNQbFucUjtk15460MvQeJYf1nqbQfQj62g/exec";
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzj6bq31AARzpnkhgBqwTOqVcTPS53JQrfPHBBCyLFcoH3Fdpz8exwilLwJiPGElEzDcg/exec";
   const GOOGLE_CLIENT_ID = "145010218161-74lk5fmrgofv3suts1knolrtujaj4k9j.apps.googleusercontent.com";
 
-  // ── STATE ──
   let currentUser = null;
   let userLocation = null;
   let todayRecord = null;
   let locationGranted = false;
 
-  // ── INIT ──
   window.onload = () => {
     setTodayDate();
     checkSavedSession();
@@ -460,103 +467,147 @@
 
   function setTodayDate() {
     const now = new Date();
-    const options = { day: 'numeric', month: 'long', year: 'numeric' };
+    const options = {
+      timeZone: "Australia/Sydney",
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    };
+
     document.getElementById("todayDate").textContent =
-      now.toLocaleDateString('en-AU', options);
+      now.toLocaleDateString("en-AU", options);
   }
 
   function getTodayString() {
-  const parts = new Intl.DateTimeFormat('en-CA', {
-    timeZone: 'Australia/Sydney',
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit'
-  }).formatToParts(new Date());
+    const parts = new Intl.DateTimeFormat("en-CA", {
+      timeZone: "Australia/Sydney",
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit"
+    }).formatToParts(new Date());
 
-  const year = parts.find(p => p.type === 'year').value;
-  const month = parts.find(p => p.type === 'month').value;
-  const day = parts.find(p => p.type === 'day').value;
+    const year = parts.find(p => p.type === "year").value;
+    const month = parts.find(p => p.type === "month").value;
+    const day = parts.find(p => p.type === "day").value;
 
-  return `${year}-${month}-${day}`;
-}
+    return `${year}-${month}-${day}`;
+  }
 
   function getAustralianTime() {
-    return new Date().toLocaleString('en-AU', {
-      timeZone: 'Australia/Sydney',
-      day: '2-digit', month: '2-digit', year: 'numeric',
-      hour: '2-digit', minute: '2-digit', second: '2-digit',
+    return new Date().toLocaleString("en-AU", {
+      timeZone: "Australia/Sydney",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
       hour12: true
     });
   }
 
-  // ── LOCATION ──
   function requestLocation() {
     if (!navigator.geolocation) {
       showLocationWarning();
       return;
     }
+
     navigator.geolocation.getCurrentPosition(
       pos => {
         userLocation = {
           lat: pos.coords.latitude,
           lng: pos.coords.longitude
         };
+
         locationGranted = true;
         hideLocationWarning();
         updateButtons();
       },
       err => {
-        showLocationWarning();
         locationGranted = false;
+        showLocationWarning();
         updateButtons();
       },
-      { enableHighAccuracy: true, timeout: 10000 }
+      {
+        enableHighAccuracy: true,
+        timeout: 10000
+      }
     );
   }
 
   function showLocationWarning() {
     document.getElementById("locationWarning").classList.add("show");
   }
+
   function hideLocationWarning() {
     document.getElementById("locationWarning").classList.remove("show");
   }
 
-  // ── GOOGLE SIGN IN ──
   function signIn() {
-    if (typeof google === 'undefined') {
-      // Fallback: simple prompt for demo/testing
-      const email = prompt("Enter your Gmail address to sign in:");
-      if (!email || !email.includes("@")) return;
-      const name = email.split("@")[0];
-      currentUser = { name: name, email: email };
-      saveSession();
-      showMainScreen();
+    if (typeof google === "undefined") {
+      manualEmailSignIn();
       return;
     }
-    google.accounts.id.initialize({
-      client_id: GOOGLE_CLIENT_ID,
-      callback: handleGoogleResponse,
-      auto_select: false
-    });
-    google.accounts.id.prompt();
+
+    try {
+      google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleGoogleResponse,
+        auto_select: false
+      });
+
+      google.accounts.id.prompt(notification => {
+        if (
+          notification.isNotDisplayed() ||
+          notification.isSkippedMoment() ||
+          notification.isDismissedMoment()
+        ) {
+          manualEmailSignIn();
+        }
+      });
+
+    } catch (e) {
+      manualEmailSignIn();
+    }
+  }
+
+  function manualEmailSignIn() {
+    const email = prompt("Enter your email address to sign in:");
+
+    if (!email || !email.includes("@")) {
+      showToast("Please enter a valid email address", "error");
+      return;
+    }
+
+    const name = email.split("@")[0];
+
+    currentUser = {
+      name: name,
+      email: email.trim().toLowerCase()
+    };
+
+    saveSession();
+    showMainScreen();
   }
 
   function handleGoogleResponse(response) {
     const payload = parseJwt(response.credential);
+
     currentUser = {
       name: payload.name,
-      email: payload.email,
+      email: payload.email.trim().toLowerCase(),
       picture: payload.picture
     };
+
     saveSession();
     showMainScreen();
   }
 
   function parseJwt(token) {
-    const base64 = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
-    return JSON.parse(decodeURIComponent(atob(base64).split('').map(c =>
-      '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-    ).join('')));
+    const base64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
+    return JSON.parse(decodeURIComponent(atob(base64).split("").map(c =>
+      "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2)
+    ).join("")));
   }
 
   function saveSession() {
@@ -565,97 +616,112 @@
 
   function checkSavedSession() {
     const saved = localStorage.getItem("srpUser");
+
     if (saved) {
       currentUser = JSON.parse(saved);
       showMainScreen();
     }
   }
 
-  function signOut() {
-    localStorage.removeItem("srpUser");
-    currentUser = null;
-    todayRecord = null;
-    document.getElementById("loginScreen").style.display = "flex";
-    document.getElementById("mainScreen").style.display = "none";
+  function safeCloseMessage() {
+    showToast("You can close the app. Your status is saved.", "success");
   }
 
-  // ── SHOW MAIN SCREEN ──
   function showMainScreen() {
     document.getElementById("loginScreen").style.display = "none";
     document.getElementById("mainScreen").style.display = "flex";
     document.getElementById("userName").textContent = currentUser.name;
+
     requestLocation();
     loadStatus();
   }
 
-  // ── LOAD STATUS FROM SHEET ──
   async function loadStatus() {
     setStatus("grey", "Checking...", "");
+
     try {
-      const res = await fetch(SCRIPT_URL + "?action=getStatus" +
+      const url =
+        SCRIPT_URL +
+        "?action=getStatus" +
         "&email=" + encodeURIComponent(currentUser.email) +
-        "&date=" + getTodayString());
+        "&date=" + encodeURIComponent(getTodayString());
+
+      const res = await fetch(url);
       const data = await res.json();
+
       if (data.status === "success" && data.record) {
         todayRecord = data.record;
+
         if (data.record.status === "Clocked In") {
           setStatus("green", "Clocked In", "Since " + data.record.clockInTime);
-        } else {
+        } else if (data.record.status === "Clocked Out") {
           setStatus("red", "Clocked Out", "At " + data.record.clockOutTime);
+        } else {
+          setStatus("grey", "Not Clocked In", "");
+          todayRecord = null;
         }
       } else {
         todayRecord = null;
         setStatus("grey", "Not Clocked In", "");
       }
-    } catch(e) {
-      setStatus("grey", "Not Clocked In", "");
+
+    } catch (e) {
+      todayRecord = null;
+      setStatus("grey", "Unable to load status", "");
+      showToast("Unable to load status. Check connection.", "error");
     }
+
     updateButtons();
   }
 
-  // ── STATUS UI ──
   function setStatus(color, text, timeText) {
     const dot = document.getElementById("statusDot");
     dot.className = "status-dot";
+
     if (color === "green") dot.classList.add("dot-green");
     else if (color === "red") dot.classList.add("dot-red");
     else dot.classList.add("dot-grey");
+
     document.getElementById("statusText").textContent = text;
-    document.getElementById("timeInfo").textContent = timeText;
+    document.getElementById("timeInfo").textContent = timeText || "";
   }
 
-  // ── BUTTON STATES ──
   function updateButtons() {
-    const clockIn  = document.getElementById("btnClockIn");
+    const clockIn = document.getElementById("btnClockIn");
     const clockOut = document.getElementById("btnClockOut");
 
     if (!locationGranted) {
-      clockIn.disabled  = true;
+      clockIn.disabled = true;
       clockOut.disabled = true;
       return;
     }
 
     if (!todayRecord) {
-      clockIn.disabled  = false;
+      clockIn.disabled = false;
       clockOut.disabled = true;
     } else if (todayRecord.status === "Clocked In") {
-      clockIn.disabled  = true;
+      clockIn.disabled = true;
       clockOut.disabled = false;
+    } else if (todayRecord.status === "Clocked Out") {
+      clockIn.disabled = true;
+      clockOut.disabled = true;
     } else {
-      clockIn.disabled  = true;
+      clockIn.disabled = false;
       clockOut.disabled = true;
     }
   }
 
-  // ── CLOCK IN ──
   async function clockIn() {
     if (!locationGranted || !userLocation) {
-      showToast("Please enable location access first", "error");
+      showToast("Please enable location access first.", "error");
       return;
     }
+
     showLoading("Recording clock in...");
+
     try {
       const mapLink = `https://maps.google.com/?q=${userLocation.lat},${userLocation.lng}`;
+
       const payload = {
         action: "clockIn",
         employeeName: currentUser.name,
@@ -666,34 +732,39 @@
         clockInLongitude: userLocation.lng,
         clockInMapLink: mapLink
       };
+
       const res = await fetch(SCRIPT_URL, {
         method: "POST",
         body: JSON.stringify(payload)
       });
+
       const data = await res.json();
+
       if (data.status === "success") {
-        todayRecord = { status: "Clocked In", clockInTime: getAustralianTime() };
-        setStatus("green", "Clocked In", "Just now");
-        updateButtons();
-        showToast("✅ Clock In recorded!", "success");
+        showToast("Clock In recorded successfully.", "success");
+        await loadStatus();
       } else {
-        showToast("Something went wrong. Try again.", "error");
+        showToast(data.message || "Clock In failed.", "error");
       }
-    } catch(e) {
-      showToast("Connection error. Try again.", "error");
+
+    } catch (e) {
+      showToast("Connection error during Clock In.", "error");
     }
+
     hideLoading();
   }
 
-  // ── CLOCK OUT ──
   async function clockOut() {
     if (!locationGranted || !userLocation) {
-      showToast("Please enable location access first", "error");
+      showToast("Please enable location access first.", "error");
       return;
     }
+
     showLoading("Recording clock out...");
+
     try {
       const mapLink = `https://maps.google.com/?q=${userLocation.lat},${userLocation.lng}`;
+
       const payload = {
         action: "clockOut",
         employeeEmail: currentUser.email,
@@ -703,45 +774,51 @@
         clockOutLongitude: userLocation.lng,
         clockOutMapLink: mapLink
       };
+
       const res = await fetch(SCRIPT_URL, {
         method: "POST",
         body: JSON.stringify(payload)
       });
+
       const data = await res.json();
+
       if (data.status === "success") {
-        todayRecord = { status: "Clocked Out", clockOutTime: getAustralianTime() };
-        setStatus("red", "Clocked Out", "Just now");
-        updateButtons();
-        showToast("🔴 Clock Out recorded!", "success");
+        showToast("Clock Out recorded successfully.", "success");
+        await loadStatus();
       } else {
-        showToast("Something went wrong. Try again.", "error");
+        showToast(data.message || "Clock Out failed.", "error");
       }
-    } catch(e) {
-      showToast("Connection error. Try again.", "error");
+
+    } catch (e) {
+      showToast("Connection error during Clock Out.", "error");
     }
+
     hideLoading();
   }
 
-  // ── TOAST ──
   function showToast(msg, type = "success") {
     const t = document.getElementById("toast");
     t.textContent = msg;
     t.className = "toast show " + type;
-    setTimeout(() => t.className = "toast", 3500);
+
+    setTimeout(() => {
+      t.className = "toast";
+    }, 3500);
   }
 
-  // ── LOADING ──
   function showLoading(msg) {
     document.getElementById("loadingText").textContent = msg;
     document.getElementById("loadingOverlay").classList.add("show");
   }
+
   function hideLoading() {
     document.getElementById("loadingOverlay").classList.remove("show");
   }
 
-  // ── RELOAD STATUS EVERY 60s ──
   setInterval(() => {
-    if (currentUser) loadStatus();
+    if (currentUser) {
+      loadStatus();
+    }
   }, 60000);
 </script>
 
