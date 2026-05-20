@@ -382,7 +382,7 @@
 
     <div class="content">
 
-      <button class="signout-btn" onclick="safeCloseMessage()">Close App ↗</button>
+     <button class="signout-btn" onclick="closeAppToLogin()">Close App ↗</button>
 
       <div class="card">
         <div class="card-icon">👤</div>
@@ -623,9 +623,21 @@
     }
   }
 
-  function safeCloseMessage() {
-    showToast("You can close the app. Your status is saved.", "success");
-  }
+ function closeAppToLogin() {
+  // This only exits the app screen.
+  // It does not change the Google Sheet clock-in / clock-out record.
+
+  localStorage.removeItem("srpUser");
+
+  currentUser = null;
+  todayRecord = null;
+
+  document.getElementById("mainScreen").style.display = "none";
+  document.getElementById("loginScreen").style.display = "flex";
+
+  setStatus("grey", "Checking...", "");
+  showToast("App closed. Your time ledger status is saved.", "success");
+}
 
   function showMainScreen() {
     document.getElementById("loginScreen").style.display = "none";
