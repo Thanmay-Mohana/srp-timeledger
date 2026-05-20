@@ -442,7 +442,7 @@
 
 <script>
   // ── CONFIG ──
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzj6bq31AARzpnkhgBqwTOqVcTPS53JQrfPHBBCyLFcoH3Fdpz8exwilLwJiPGElEzDcg/exec";
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwTGBBm7YgkUGg0vUiSAbvjNAQWwu0Ti_DBdNQbFucUjtk15460MvQeJYf1nqbQfQj62g/exec";
   const GOOGLE_CLIENT_ID = "145010218161-74lk5fmrgofv3suts1knolrtujaj4k9j.apps.googleusercontent.com";
 
   // ── STATE ──
@@ -466,9 +466,19 @@
   }
 
   function getTodayString() {
-    const now = new Date();
-    return now.toISOString().split('T')[0];
-  }
+  const parts = new Intl.DateTimeFormat('en-CA', {
+    timeZone: 'Australia/Sydney',
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit'
+  }).formatToParts(new Date());
+
+  const year = parts.find(p => p.type === 'year').value;
+  const month = parts.find(p => p.type === 'month').value;
+  const day = parts.find(p => p.type === 'day').value;
+
+  return `${year}-${month}-${day}`;
+}
 
   function getAustralianTime() {
     return new Date().toLocaleString('en-AU', {
