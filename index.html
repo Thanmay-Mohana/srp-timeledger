@@ -214,6 +214,20 @@
       font-size: 15px;
     }
 
+    .login-input {
+      width: 100%;
+      border: 1px solid #DDDDDD;
+      border-radius: 10px;
+      padding: 14px 16px;
+      font-size: 15px;
+      outline: none;
+    }
+
+    .login-input:focus {
+      border-color: #E8521A;
+      box-shadow: 0 0 0 2px rgba(232,82,26,0.08);
+    }
+
     .privacy-card {
       background: #FFF5F1;
       border: 1px solid #F5C5AF;
@@ -241,7 +255,7 @@
       justify-content: center;
       padding: 40px 24px;
       text-align: center;
-      gap: 20px;
+      gap: 16px;
     }
 
     .login-logo {
@@ -270,6 +284,7 @@
       height: 3px;
       background: #E8521A;
       border-radius: 2px;
+      margin-bottom: 6px;
     }
 
     .toast {
@@ -367,13 +382,16 @@
     <div class="login-title">Time Ledger</div>
     <div class="login-sub">Clock In / Clock Out tracking for<br>SRP Global Consultancy employees</div>
 
-    <button class="btn btn-signin" onclick="signIn()">
+    <input class="login-input" id="employeeId" placeholder="Employee ID" inputmode="numeric" />
+    <input class="login-input" id="passcode" placeholder="Passcode" type="password" inputmode="numeric" />
+
+    <button class="btn btn-signin" onclick="loginWithPasscode()">
       <span>🔐</span>
-      <span>Sign in with Google</span>
+      <span>Login</span>
     </button>
 
     <p style="font-size:11px;color:#AAAAAA;margin-top:8px;">
-      Use your Gmail or company email to sign in
+      Use your assigned Employee ID and passcode
     </p>
   </div>
 
@@ -382,13 +400,21 @@
 
     <div class="content">
 
-     <button class="signout-btn" onclick="closeAppToLogin()">Close App ↗</button>
+      <button class="signout-btn" onclick="closeAppToLogin()">Close App ↗</button>
 
       <div class="card">
         <div class="card-icon">👤</div>
         <div>
           <div class="card-label">Logged in as</div>
           <div class="card-value" id="userName">—</div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-icon">🆔</div>
+        <div>
+          <div class="card-label">Employee ID</div>
+          <div class="card-value" id="displayEmployeeId">—</div>
         </div>
       </div>
 
@@ -432,7 +458,7 @@
       <div class="privacy-card">
         <div class="card-icon">🛡️</div>
         <p>
-          By using this app, your clock-in and clock-out time, user account, and location details will be recorded for attendance and operational tracking purposes.
+          By using this app, your clock-in and clock-out time, employee details, and location details will be recorded for attendance and operational tracking purposes.
         </p>
       </div>
 
@@ -448,11 +474,8 @@
   <p id="loadingText">Please wait...</p>
 </div>
 
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-
 <script>
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyB4t5rxNVp0SEyjs_lKs1pWdg_BTa_JZDkaAeNPku51s0DME1CQHdgdkdwKovBLVHLFA/exec";
-  const GOOGLE_CLIENT_ID = "145010218161-74lk5fmrgofv3suts1knolrtujaj4k9j.apps.googleusercontent.com";
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylOfatpCTKcnCnXgx9_3_KTyW0Eq6DaHcZthV9dieszZwoZmvoenykgVSOfGV5xlOw6w/exec";
 
   let currentUser = null;
   let userLocation = null;
@@ -508,7 +531,9 @@
 
   function requestLocation() {
     if (!navigator.geolocation) {
+      locationGranted = false;
       showLocationWarning();
+      updateButtons();
       return;
     }
 
@@ -543,71 +568,48 @@
     document.getElementById("locationWarning").classList.remove("show");
   }
 
-  function signIn() {
-    if (typeof google === "undefined") {
-      manualEmailSignIn();
+  async function loginWithPasscode() {
+    const employeeId = document.getElementById("employeeId").value.trim();
+    const passcode = document.getElementById("passcode").value.trim();
+
+    if (!employeeId || !passcode) {
+      showToast("Please enter Employee ID and passcode.", "error");
       return;
     }
+
+    showLoading("Validating login...");
 
     try {
-      google.accounts.id.initialize({
-        client_id: GOOGLE_CLIENT_ID,
-        callback: handleGoogleResponse,
-        auto_select: false
+      const res = await fetch(SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({
+          action: "validateLogin",
+          employeeId: employeeId,
+          passcode: passcode
+        })
       });
 
-      google.accounts.id.prompt(notification => {
-        if (
-          notification.isNotDisplayed() ||
-          notification.isSkippedMoment() ||
-          notification.isDismissedMoment()
-        ) {
-          manualEmailSignIn();
-        }
-      });
+      const data = await res.json();
+
+      if (data.status === "success") {
+        currentUser = {
+          employeeId: data.employee.employeeId,
+          name: data.employee.name,
+          email: data.employee.email
+        };
+
+        saveSession();
+        showMainScreen();
+        showToast("Login successful.", "success");
+      } else {
+        showToast(data.message || "Invalid login.", "error");
+      }
 
     } catch (e) {
-      manualEmailSignIn();
-    }
-  }
-
-  function manualEmailSignIn() {
-    const email = prompt("Enter your email address to sign in:");
-
-    if (!email || !email.includes("@")) {
-      showToast("Please enter a valid email address", "error");
-      return;
+      showToast("Login failed. Check connection.", "error");
     }
 
-    const name = email.split("@")[0];
-
-    currentUser = {
-      name: name,
-      email: email.trim().toLowerCase()
-    };
-
-    saveSession();
-    showMainScreen();
-  }
-
-  function handleGoogleResponse(response) {
-    const payload = parseJwt(response.credential);
-
-    currentUser = {
-      name: payload.name,
-      email: payload.email.trim().toLowerCase(),
-      picture: payload.picture
-    };
-
-    saveSession();
-    showMainScreen();
-  }
-
-  function parseJwt(token) {
-    const base64 = token.split(".")[1].replace(/-/g, "+").replace(/_/g, "/");
-    return JSON.parse(decodeURIComponent(atob(base64).split("").map(c =>
-      "%" + ("00" + c.charCodeAt(0).toString(16)).slice(-2)
-    ).join("")));
+    hideLoading();
   }
 
   function saveSession() {
@@ -623,32 +625,36 @@
     }
   }
 
- function closeAppToLogin() {
-  // This only exits the app screen.
-  // It does not change the Google Sheet clock-in / clock-out record.
+  function closeAppToLogin() {
+    localStorage.removeItem("srpUser");
 
-  localStorage.removeItem("srpUser");
+    currentUser = null;
+    todayRecord = null;
 
-  currentUser = null;
-  todayRecord = null;
+    document.getElementById("mainScreen").style.display = "none";
+    document.getElementById("loginScreen").style.display = "flex";
 
-  document.getElementById("mainScreen").style.display = "none";
-  document.getElementById("loginScreen").style.display = "flex";
+    document.getElementById("employeeId").value = "";
+    document.getElementById("passcode").value = "";
 
-  setStatus("grey", "Checking...", "");
-  showToast("App closed. Your time ledger status is saved.", "success");
-}
+    setStatus("grey", "Checking...", "");
+    showToast("App closed. Your time ledger status is saved.", "success");
+  }
 
   function showMainScreen() {
     document.getElementById("loginScreen").style.display = "none";
     document.getElementById("mainScreen").style.display = "flex";
-    document.getElementById("userName").textContent = currentUser.name;
+
+    document.getElementById("userName").textContent = currentUser.name || "—";
+    document.getElementById("displayEmployeeId").textContent = currentUser.employeeId || "—";
 
     requestLocation();
     loadStatus();
   }
 
   async function loadStatus() {
+    if (!currentUser || !currentUser.email) return;
+
     setStatus("grey", "Checking...", "");
 
     try {
@@ -702,6 +708,12 @@
     const clockIn = document.getElementById("btnClockIn");
     const clockOut = document.getElementById("btnClockOut");
 
+    if (!currentUser) {
+      clockIn.disabled = true;
+      clockOut.disabled = true;
+      return;
+    }
+
     if (!locationGranted) {
       clockIn.disabled = true;
       clockOut.disabled = true;
@@ -726,6 +738,11 @@
   async function clockIn() {
     if (!locationGranted || !userLocation) {
       showToast("Please enable location access first.", "error");
+      return;
+    }
+
+    if (!currentUser) {
+      showToast("Please login first.", "error");
       return;
     }
 
@@ -772,6 +789,11 @@
       return;
     }
 
+    if (!currentUser) {
+      showToast("Please login first.", "error");
+      return;
+    }
+
     showLoading("Recording clock out...");
 
     try {
@@ -779,6 +801,7 @@
 
       const payload = {
         action: "clockOut",
+        employeeName: currentUser.name,
         employeeEmail: currentUser.email,
         workDate: getTodayString(),
         clockOutTime: getAustralianTime(),
