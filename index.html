@@ -487,47 +487,70 @@
     checkSavedSession();
     requestLocation();
   };
+function getUserTimeZone() {
+  return Intl.DateTimeFormat().resolvedOptions().timeZone || "Australia/Sydney";
+}
 
-  function setTodayDate() {
-    const now = new Date();
-    const options = {
-      timeZone: "Australia/Sydney",
+function setTodayDate() {
+  const now = new Date();
+
+  document.getElementById("todayDate").textContent =
+    now.toLocaleDateString("en-AU", {
+      timeZone: getUserTimeZone(),
       day: "numeric",
       month: "long",
       year: "numeric"
-    };
-
-    document.getElementById("todayDate").textContent =
-      now.toLocaleDateString("en-AU", options);
-  }
-
-  function getTodayString() {
-    const parts = new Intl.DateTimeFormat("en-AU", {
-      timeZone: "Australia/Sydney",
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit"
-    }).formatToParts(new Date());
-
-    const year = parts.find(p => p.type === "year").value;
-    const month = parts.find(p => p.type === "month").value;
-    const day = parts.find(p => p.type === "day").value;
-
-    return `${year}-${month}-${day}`;
-  }
-
-  function getAustralianTime() {
-    return new Date().toLocaleString("en-AU", {
-      timeZone: "Australia/Sydney",
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: true
     });
+}
+
+function getTodayString() {
+  const parts = new Intl.DateTimeFormat("en-AU", {
+    timeZone: getUserTimeZone(),
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).formatToParts(new Date());
+
+  const year = parts.find(p => p.type === "year").value;
+  const month = parts.find(p => p.type === "month").value;
+  const day = parts.find(p => p.type === "day").value;
+
+  return `${year}-${month}-${day}`;
+}
+
+function getAustralianTime() {
+  return new Date().toLocaleString("en-AU", {
+    timeZone: getUserTimeZone(),
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true
+  });
+}
+
+function formatDisplayDateTime(value) {
+  if (!value) return "";
+
+  const date = new Date(value);
+
+  if (isNaN(date.getTime())) {
+    return value;
   }
+
+  return date.toLocaleString("en-AU", {
+    timeZone: getUserTimeZone(),
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true
+  });
+}
 
   function requestLocation() {
     if (!navigator.geolocation) {
@@ -671,9 +694,9 @@
         todayRecord = data.record;
 
         if (data.record.status === "Clocked In") {
-          setStatus("green", "Clocked In", "Since " + data.record.clockInTime);
+          setStatus("green", "Clocked In", "Since " + formatDisplayDateTime(data.record.clockInTime));
         } else if (data.record.status === "Clocked Out") {
-          setStatus("red", "Clocked Out", "At " + data.record.clockOutTime);
+          setStatus("red", "Clocked Out", "At " + formatDisplayDateTime(data.record.clockOutTime));
         } else {
           setStatus("grey", "Not Clocked In", "");
           todayRecord = null;
