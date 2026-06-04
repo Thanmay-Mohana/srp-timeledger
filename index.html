@@ -380,6 +380,94 @@
       color: #888;
       margin-top: 2px;
     }
+
+    .view-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .view-tab {
+      border: 1px solid #E8521A;
+      border-radius: 10px;
+      background: #FFFFFF;
+      color: #E8521A;
+      padding: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .view-tab.active {
+      background: #E8521A;
+      color: #FFFFFF;
+    }
+
+    .app-view {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .app-view.hidden { display: none; }
+
+    .report-field {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .report-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #333333;
+      letter-spacing: 0.3px;
+    }
+
+    .report-select {
+      min-height: 92px;
+    }
+
+    .report-table-wrap {
+      overflow-x: auto;
+      border: 1px solid #E8E8E8;
+      border-radius: 10px;
+    }
+
+    .report-table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 420px;
+      background: #FFFFFF;
+    }
+
+    .report-table th,
+    .report-table td {
+      padding: 10px 8px;
+      border-bottom: 1px solid #EEEEEE;
+      font-size: 11px;
+      text-align: left;
+      color: #333333;
+    }
+
+    .report-table th {
+      background: #F7F7F7;
+      font-weight: 700;
+      color: #1A1A2E;
+    }
+
+    .report-table tr:last-child td { border-bottom: none; }
+
+    .report-message {
+      font-size: 12px;
+      color: #777777;
+      line-height: 1.5;
+      text-align: center;
+      padding: 12px;
+      border: 1px solid #E8E8E8;
+      border-radius: 10px;
+      background: #FAFAFA;
+    }
   </style>
 </head>
 
@@ -422,6 +510,13 @@
     <div class="content">
 
       <button class="signout-btn" onclick="closeAppToLogin()">Close App ↗</button>
+
+      <div class="view-tabs">
+        <button class="view-tab active" id="clockTab" onclick="showClockView()">Clock</button>
+        <button class="view-tab" id="reportTab" onclick="showReportView()">Report</button>
+      </div>
+
+      <div class="app-view" id="clockView">
 
       <div class="card">
         <div class="card-icon">👤</div>
@@ -489,6 +584,47 @@
         </p>
       </div>
 
+      </div>
+
+      <div class="app-view hidden" id="reportView">
+        <div class="report-field">
+          <label class="report-label" for="reportEmployeeSelect">Employee</label>
+          <select class="login-input report-select" id="reportEmployeeSelect" multiple onchange="handleReportEmployeeSelection()"></select>
+        </div>
+
+        <div class="report-field">
+          <label class="report-label" for="reportStartDate">Start Date</label>
+          <input class="login-input" id="reportStartDate" type="date" />
+        </div>
+
+        <div class="report-field">
+          <label class="report-label" for="reportEndDate">End Date</label>
+          <input class="login-input" id="reportEndDate" type="date" />
+        </div>
+
+        <button class="btn btn-clockin" id="btnLoadReport" onclick="loadReport()">
+          <span class="btn-icon">📊</span>
+          <span class="btn-label">Load Report</span>
+          <span class="btn-arrow">›</span>
+        </button>
+
+        <div class="report-message" id="reportMessage">No report loaded.</div>
+
+        <div class="report-table-wrap" id="reportTableWrap" style="display:none;">
+          <table class="report-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Total Hours</th>
+                <th>Total KMs</th>
+              </tr>
+            </thead>
+            <tbody id="reportTableBody"></tbody>
+          </table>
+        </div>
+      </div>
+
     </div>
   </div>
 
@@ -503,11 +639,16 @@
 
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbylOfatpCTKcnCnXgx9_3_KTyW0Eq6DaHcZthV9dieszZwoZmvoenykgVSOfGV5xlOw6w/exec";
+  const REPORT_MANAGER_EMAILS = [
+    "recruiter@srpglobalconsultancy.com.au",
+    "sagarpatelsp@yahoo.co.in"
+  ];
 
   let currentUser = null;
   let userLocation = null;
   let todayRecord = null;
   let locationGranted = false;
+  let reportEmployeeOptions = [];
 
   window.onload = () => {
     setTodayDate();
@@ -577,6 +718,14 @@ function formatDisplayDateTime(value) {
     second: "2-digit",
     hour12: true
   });
+}
+
+function normalizeEmail(email) {
+  return String(email || "").trim().toLowerCase();
+}
+
+function isReportManager() {
+  return currentUser && REPORT_MANAGER_EMAILS.includes(normalizeEmail(currentUser.email));
 }
 
   function requestLocation() {
@@ -680,6 +829,7 @@ function formatDisplayDateTime(value) {
 
     currentUser = null;
     todayRecord = null;
+    reportEmployeeOptions = [];
 
     document.getElementById("mainScreen").style.display = "none";
     document.getElementById("loginScreen").style.display = "flex";
@@ -688,6 +838,8 @@ function formatDisplayDateTime(value) {
     document.getElementById("passcode").value = "";
 
     setStatus("grey", "Checking...", "");
+    showClockView();
+    clearReportResults("No report loaded.");
     showToast("App closed. Your time ledger status is saved.", "success");
   }
 
@@ -698,8 +850,228 @@ function formatDisplayDateTime(value) {
     document.getElementById("userName").textContent = currentUser.name || "—";
     document.getElementById("displayEmployeeId").textContent = currentUser.employeeId || "—";
 
+    showClockView();
+    setupReportView();
     requestLocation();
     loadStatus();
+  }
+
+  function showClockView() {
+    document.getElementById("clockView").classList.remove("hidden");
+    document.getElementById("reportView").classList.add("hidden");
+    document.getElementById("clockTab").classList.add("active");
+    document.getElementById("reportTab").classList.remove("active");
+  }
+
+  function showReportView() {
+    setupReportView();
+    document.getElementById("clockView").classList.add("hidden");
+    document.getElementById("reportView").classList.remove("hidden");
+    document.getElementById("clockTab").classList.remove("active");
+    document.getElementById("reportTab").classList.add("active");
+  }
+
+  function setupReportView() {
+    const today = getTodayString();
+    const startDate = document.getElementById("reportStartDate");
+    const endDate = document.getElementById("reportEndDate");
+
+    if (!startDate.value) startDate.value = today;
+    if (!endDate.value) endDate.value = today;
+
+    renderReportEmployeeFilter();
+  }
+
+  function renderReportEmployeeFilter() {
+    const select = document.getElementById("reportEmployeeSelect");
+    select.innerHTML = "";
+
+    if (!currentUser) return;
+
+    if (!isReportManager()) {
+      select.multiple = false;
+      select.disabled = true;
+
+      const option = document.createElement("option");
+      option.value = normalizeEmail(currentUser.email);
+      option.textContent = `${currentUser.name || "Employee"} (${currentUser.email || "No email"})`;
+      option.selected = true;
+      select.appendChild(option);
+      return;
+    }
+
+    select.multiple = true;
+    select.disabled = false;
+
+    const allOption = document.createElement("option");
+    allOption.value = "ALL";
+    allOption.textContent = "All Employees";
+    allOption.selected = true;
+    select.appendChild(allOption);
+
+    reportEmployeeOptions.forEach(employee => {
+      const option = document.createElement("option");
+      option.value = normalizeEmail(employee.email);
+      option.textContent = `${employee.name || "Employee"} (${employee.email})`;
+      select.appendChild(option);
+    });
+  }
+
+  function handleReportEmployeeSelection() {
+    if (!isReportManager()) return;
+
+    const select = document.getElementById("reportEmployeeSelect");
+    const selectedValues = Array.from(select.selectedOptions).map(option => option.value);
+
+    if (selectedValues.includes("ALL") && selectedValues.length > 1) {
+      Array.from(select.options).forEach(option => {
+        option.selected = option.value === "ALL";
+      });
+    }
+  }
+
+  function getSelectedReportEmployees() {
+    if (!isReportManager()) {
+      return normalizeEmail(currentUser.email);
+    }
+
+    const select = document.getElementById("reportEmployeeSelect");
+    const selectedValues = Array.from(select.selectedOptions).map(option => option.value);
+
+    if (!selectedValues.length || selectedValues.includes("ALL")) {
+      return "ALL";
+    }
+
+    return selectedValues.join(",");
+  }
+
+  function updateReportEmployeeOptions(rows) {
+    const seen = {};
+
+    reportEmployeeOptions.forEach(employee => {
+      seen[normalizeEmail(employee.email)] = employee;
+    });
+
+    rows.forEach(row => {
+      const email = normalizeEmail(row.email);
+
+      if (email && !seen[email]) {
+        seen[email] = {
+          name: row.name || "Employee",
+          email: email
+        };
+      }
+    });
+
+    reportEmployeeOptions = Object.keys(seen)
+      .map(email => seen[email])
+      .sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+  }
+
+  function clearReportResults(message) {
+    document.getElementById("reportTableWrap").style.display = "none";
+    document.getElementById("reportTableBody").innerHTML = "";
+    document.getElementById("reportMessage").style.display = "block";
+    document.getElementById("reportMessage").textContent = message;
+  }
+
+  function renderReportResults(rows) {
+    const tableWrap = document.getElementById("reportTableWrap");
+    const tableBody = document.getElementById("reportTableBody");
+    const message = document.getElementById("reportMessage");
+
+    tableBody.innerHTML = "";
+
+    if (!rows.length) {
+      clearReportResults("No report data found for the selected date range.");
+      return;
+    }
+
+    rows.forEach(row => {
+      const tr = document.createElement("tr");
+      const values = [
+        row.name || "—",
+        row.email || "—",
+        Number(row.totalHours || 0).toFixed(2),
+        Number(row.totalKm || 0).toFixed(2)
+      ];
+
+      values.forEach(value => {
+        const td = document.createElement("td");
+        td.textContent = value;
+        tr.appendChild(td);
+      });
+
+      tableBody.appendChild(tr);
+    });
+
+    message.style.display = "none";
+    tableWrap.style.display = "block";
+  }
+
+  async function loadReport() {
+    if (!currentUser || !currentUser.email) {
+      showToast("Please login first.", "error");
+      return;
+    }
+
+    const startDate = document.getElementById("reportStartDate").value;
+    const endDate = document.getElementById("reportEndDate").value;
+
+    if (!startDate) {
+      clearReportResults("Start date is required.");
+      showToast("Start date is required.", "error");
+      return;
+    }
+
+    if (!endDate) {
+      clearReportResults("End date is required.");
+      showToast("End date is required.", "error");
+      return;
+    }
+
+    if (endDate < startDate) {
+      clearReportResults("End date cannot be before start date.");
+      showToast("End date cannot be before start date.", "error");
+      return;
+    }
+
+    const employeeEmails = getSelectedReportEmployees();
+
+    showLoading("Loading report...");
+
+    try {
+      const url =
+        SCRIPT_URL +
+        "?action=getReport" +
+        "&requesterEmail=" + encodeURIComponent(currentUser.email) +
+        "&startDate=" + encodeURIComponent(startDate) +
+        "&endDate=" + encodeURIComponent(endDate) +
+        "&employeeEmails=" + encodeURIComponent(employeeEmails);
+
+      const res = await fetch(url);
+      const data = await res.json();
+
+      if (data.status === "success") {
+        const rows = data.report || [];
+
+        if (isReportManager() && employeeEmails === "ALL") {
+          updateReportEmployeeOptions(rows);
+          renderReportEmployeeFilter();
+        }
+
+        renderReportResults(rows);
+      } else {
+        clearReportResults(data.message || "Unable to load report.");
+        showToast(data.message || "Unable to load report.", "error");
+      }
+
+    } catch (e) {
+      clearReportResults("Unable to load report. Check connection.");
+      showToast("Unable to load report. Check connection.", "error");
+    }
+
+    hideLoading();
   }
 
   async function loadStatus() {
