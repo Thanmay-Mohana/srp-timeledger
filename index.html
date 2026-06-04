@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -817,6 +817,20 @@ function formatDisplayDateTime(value) {
       return;
     }
 
+    const kmInput = prompt("Distance Travelled in KM");
+
+    if (kmInput === null) {
+      showToast("Distance Travelled in KM is required.", "error");
+      return;
+    }
+
+    const kmTravelled = kmInput.trim();
+
+    if (!kmTravelled || !/^\d+(\.\d+)?$/.test(kmTravelled)) {
+      showToast("Please enter a valid Distance Travelled in KM.", "error");
+      return;
+    }
+
     showLoading("Recording clock out...");
 
     try {
@@ -830,7 +844,8 @@ function formatDisplayDateTime(value) {
         clockOutTime: getAustralianTime(),
         clockOutLatitude: userLocation.lat,
         clockOutLongitude: userLocation.lng,
-        clockOutMapLink: mapLink
+        clockOutMapLink: mapLink,
+        kmTravelled: kmTravelled
       };
 
       const res = await fetch(SCRIPT_URL, {
